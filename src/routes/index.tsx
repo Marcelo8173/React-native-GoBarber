@@ -13,6 +13,7 @@ const AuthRoutes: React.FC = () =>{
                 headerShown: false,
                 cardStyle: {backgroundColor: '#312e38'}
             }}
+            // initialRouteName='SingUp'
         >
             
             <Auth.Screen name="SingIn" component={SingIn} />
