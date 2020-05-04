@@ -5,6 +5,7 @@ import Input from '../../components/input';
 import Button from '../../components/button';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import { useAuth } from '../../hooks/AuthContext';
 import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 import getValidationErros from '../../utils/getValidationErros';
@@ -20,8 +21,7 @@ const SingIn: React.FC = () =>{
     const formRef = useRef<FormHandles>(null);
     const passwordRef = useRef<TextInput>(null);
     const navigation = useNavigation();
-
-
+    const { singIn } = useAuth();
 
     const handleSubmit = useCallback(async(data: singInFormData) => {
         formRef.current?.setErrors({});
@@ -35,10 +35,10 @@ const SingIn: React.FC = () =>{
                     abortEarly: false,
                 });
                 
-                // await singIn({
-                //     email: data.email,
-                //     password: data.password,
-                // });
+                await singIn({
+                    email: data.email,
+                    password: data.password,
+                });
 
             } catch (error) {
                 if(error instanceof Yup.ValidationError){
@@ -49,7 +49,7 @@ const SingIn: React.FC = () =>{
                 Alert.alert('Erro na autenticação',
                 'Ocorreu um erro ao fazer login, reveja as credencias')
             }
-        },[]);
+        },[singIn]);
 
     return(
         <>  

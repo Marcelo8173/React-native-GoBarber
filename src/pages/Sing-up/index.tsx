@@ -7,6 +7,7 @@ import getValidationErros from '../../utils/getValidationErros';
 import * as Yup from 'yup';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import api from '../../services/api';
 
 import { useNavigation } from '@react-navigation/native';
 import { Container, Title, BackLogon, BackLogonText } from './styles';
@@ -37,10 +38,13 @@ const SingUp: React.FC = () =>{
                     abortEarly: false,
                 });
                 
-                // await singIn({
-                //     email: data.email,
-                //     password: data.password,
-                // });
+               await api.post('/users', data);
+            
+
+                Alert.alert('Cadastro relizado com sucesso!',
+                'Você já pode fazer login na aplicação')
+
+                navigation.goBack();
 
             } catch (error) {
                 if(error instanceof Yup.ValidationError){
