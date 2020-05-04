@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState,useEffect, useRef, useImperativeHandle, forwardRef, useCallback } from 'react';
 import { TextInputProps } from 'react-native';
 import { Container, TextInput, Icon } from './styles';
 import { useField } from '@unform/core';
@@ -12,13 +12,36 @@ interface inputValueRef{
     value: string;
 }
 
-const Input: React.FC<InputProps> = ({name, icon, ...rest}) =>{
+interface InputRef{
+    focus(): void;
+}
+
+const Input: React.RefForwardingComponent<InputRef,InputProps> = ({name, icon, ...rest}, ref) =>{
     const inputElementRef = useRef<any>(null)
 
     const {clearError,defaultValue = '',error, fieldName,registerField } = useField(name);
 
     const inputValueRef = useRef<inputValueRef>({ value: defaultValue});
 
+    //estado para marcação de formularios
+    const [isFocus, setIsfocus] = useState(false);
+    const [isField, setIsfield] = useState(false);
+
+    const handleInputFocus = useCallback(()=>{
+        setIsfocus(true)
+    },[]);
+    
+    const handleInputBlur = useCallback(() =>{
+        setIsfocus(false);
+        setIsfield(!!inputValueRef.current.value);
+    },[])
+
+    //passando referencia de filho para pai
+    useImperativeHandle(ref, ()=>({
+        focus(){
+            inputElementRef.current.focus();
+        },
+    }));
 
     useEffect(() =>{
          registerField<string>({
@@ -37,9 +60,11 @@ const Input: React.FC<InputProps> = ({name, icon, ...rest}) =>{
     },[fieldName, registerField]);
 
     return(
-        <Container>
-            <Icon name={icon} size={20} color="#666360"/>
+        <Container isFocus={isFocus} isErrored={!!error}>
+            <Icon name={icon} size={20} color={isFocus || isField ? '#ff9000': '#666360'}/>
             <TextInput 
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
                 ref={inputElementRef}
                 placeholderTextColor="#666360"
                 {...rest}
@@ -51,4 +76,4 @@ const Input: React.FC<InputProps> = ({name, icon, ...rest}) =>{
     );
 }
 
-export default Input;
+export default forwardRef(Input);
