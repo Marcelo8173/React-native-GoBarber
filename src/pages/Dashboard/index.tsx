@@ -22,8 +22,8 @@ const Dashboard: React.FC = () => {
 
     const { user, singOut } = useAuth();
     const navigateToProfile = useCallback(()=>{
-        // navigate('Profile')
-        singOut();
+        navigate('Profile')
+        
     },[singOut]);
 
     const navigateToCreateAppointments = useCallback((providerId: string)=>{

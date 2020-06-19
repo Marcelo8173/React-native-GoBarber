@@ -24,6 +24,7 @@ interface AuthContextData{
     loading: boolean;
     singIn(credentias: singInCredentias): Promise<void>;
     singOut(): void;
+    updateUser(user: User): void;
 };
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -67,6 +68,16 @@ const singIn = useCallback( async ({email, password}) =>{
         setData({token, user});
     }, []);
 
+    const updateUser = useCallback(async (user: User)=>{
+        
+        await AsyncStorage.setItem('@goBarber:user', JSON.stringify(user))
+
+        setData({
+            token: data.token,
+            user,
+        })
+    },[setData, data.token])
+
 const singOut = useCallback(async () => {
 
     await AsyncStorage.multiRemove([
@@ -78,11 +89,12 @@ const singOut = useCallback(async () => {
 }, []);
 
     return(
-        <AuthContext.Provider value = {{user: data.user, loading, singIn, singOut}}>
+        <AuthContext.Provider value = {{user: data.user, loading, singIn, singOut, updateUser}}>
             {children}
         </AuthContext.Provider>
     );
 };
+
 
 export function useAuth(): AuthContextData{
     const context = useContext(AuthContext);
